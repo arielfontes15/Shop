@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Models.User {
+namespace Shop.Models {
     public class User {
         [Key]
         public int Id { get; set; }
