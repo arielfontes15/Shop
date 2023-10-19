@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
@@ -5,11 +6,12 @@ using Shop.Models;
 
 namespace Shop.Controllers
 {
-    [Route("products")]
+    [Route("v1/products")]
     public class ProductController : ControllerBase 
     {
         [HttpGet]
         [Route("")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> GetProduct([FromServices] DataContext context) 
         {
             var products = await context.Products.Include(p => p.Category).AsNoTracking().ToListAsync();
@@ -18,6 +20,7 @@ namespace Shop.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> GetByIdProduct(int id, [FromServices] DataContext context) 
         {
             try
@@ -34,6 +37,7 @@ namespace Shop.Controllers
 
         [HttpGet]
         [Route("categories/{id:int}")]//products/categories/1
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> GetProductByCategory([FromServices] DataContext context, int id) 
         {
             try
@@ -49,6 +53,7 @@ namespace Shop.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize(Roles = "employee")]
         public async Task<ActionResult<List<Product>>> PostProduct(
             [FromBody]Product model,
             [FromServices] DataContext context

@@ -5,6 +5,7 @@ using System.Text;
 using Shop;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.ResponseCompression;
 
 
 internal class Program
@@ -29,6 +30,11 @@ internal class Program
                 ValidateAudience = false
             };
         });
+        builder.Services.AddCors();
+        builder.Services.AddResponseCompression(options => {
+            options.Providers.Add<GzipCompressionProvider>();
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new [] { "application/json"});
+        });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -44,7 +50,10 @@ internal class Program
         }
 
         app.UseHttpsRedirection();
-
+        app.UseCors(x =>
+            x.AllowAnyMethod()
+            .AllowAnyOrigin()
+            .AllowAnyHeader());
         app.UseAuthentication();
         app.UseAuthorization();
 
